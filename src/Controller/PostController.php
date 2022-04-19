@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Form\PostType;
+use App\Repository\PostRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,10 +13,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class PostController extends AbstractController
 {
     #[Route('/', name: 'home')]
-    public function home(): Response
+    public function home(PostRepository $postRepository): Response
     {
+        $posts = $postRepository->findAll();
+        // dd($posts);
+
+        // return $this->render('post/home.html.twig', [
+        //     'controller_name' => 'PostController',
+        // ]);
+
         return $this->render('post/home.html.twig', [
-            'controller_name' => 'PostController',
+            'posts' => $posts,
         ]);
     }
 
@@ -23,21 +32,28 @@ class PostController extends AbstractController
     {
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $post->setUser($this->getUser());
+            $post->setActive(false);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($post);
+            $em->flush();
+            return $this->redirectToRoute('home');
+        }
 
         return $this->render('post/add.html.twig', [
             'form' => $form->createView(),
         ]);
     }
 
-    #[Route('/post/{id}', name: 'post_view')]
-    public function index($id): Response
+    #[Route('/post/{slug}', name: 'post_view')]
+    public function post(Post $post): Response
     {
+        // dd($post);
         return $this->render('post/view.html.twig', [
-            'post' => [
-                'title' => 'Le titre de l\'article',
-                
-                'content' => 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi consequuntur amet ratione quos? Voluptas repellat, doloribus dolor, vero ea ipsa quasi consectetur doloremque facilis sint maxime ratione nisi sapiente consequatur? Dignissimos totam adipisci sunt fugiat consectetur nostrum omnis ullam rerum exercitationem magni ut nisi non quos earum quisquam reiciendis vitae impedit hic, corporis aliquid ad voluptate quae! Ex maiores voluptas assumenda modi ipsam possimus pariatur, autem nesciunt quos repellendus doloremque harum eveniet, ratione hic quod voluptatibus quasi molestiae tenetur magni reiciendis amet nulla dolor aliquam ut? Obcaecati neque soluta, rem nobis, delectus repudiandae ea tenetur corrupti ipsa ducimus dolores nemo natus fuga maiores quis dicta dolorum reprehenderit esse culpa quidem, deserunt et? Dignissimos aspernatur porro impedit rem, esse illo amet quasi omnis sapiente soluta cupiditate, eaque explicabo, dicta reprehenderit? Perferendis maiores veniam distinctio. Odit saepe voluptatem consequuntur tenetur natus asperiores, officia doloribus distinctio quasi, illum, temporibus eligendi expedita doloremque necessitatibus?',
-            ]
+            'post' => $post
         ]);
     }
 }
