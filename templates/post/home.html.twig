@@ -28,7 +28,9 @@
 							- Publié
 							{{ post.createdAt | ago }}
 							- Classé dans
-							{{ post.category.name }}
+							<a href="{{ path('app_category', {slug: post.category.slug}) }}">
+								{{ post.category.name }}
+							</a>
 						</p>
 					</div>
 					<!-- Divider-->
