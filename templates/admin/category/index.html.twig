@@ -6,13 +6,17 @@
 {% block body %}
 	<main>
 		<div class="container-fluid px-4">
-			<h1>Liste des catégories</h1>
+			<h1>
+				Liste des catégories
+				<a href="{{ path('admin_category_add') }}" class="btn btn-primary">Ajouter</a>
+			</h1>
 			<table id="datatablesSimple">
 				<thead>
 					<tr>
 						<th>id</th>
 						<th>name</th>
 						<th>slug</th>
+						<th>Parent</th>
 					</tr>
 				</thead>
 				<tfoot>
@@ -21,6 +25,7 @@
 						<th>id</th>
 						<th>name</th>
 						<th>slug</th>
+						<th>Parent</th>
 					</tr>
 				</tfoot>
 				<tbody>
@@ -30,6 +35,16 @@
 							<th>{{ category.id }}</th>
 							<th>{{ category.name }}</th>
 							<th>{{ category.slug }}</th>
+							<td>{{ category.parent }}</td>
+							<td>
+								<a href="{{ path('admin_category_update', {id: category.id}) }}" class="btn btn-primary btn-sm">Modifier</a>
+
+								<a href="{{ path('admin_category_delete', {id: category.id}) }}" class="btn btn-warning btn-sm" onclick="return confirm('Suppression ?')">Supprimer</a>
+
+							</td>
+							<td>
+								<a href="" class="btn btn-danger btn-sm modal-trigger" data-bs-toggle="modal" data-bs-target="#modalDelete" data-id="{{ category.id }}" data-title="{{ category.name }}">Supprimer</a>
+							</td>
 						</tr>
 					{% endfor %}
 				</tbody>
@@ -37,4 +52,37 @@
 			</table>
 		</div>
 	</main>
+	<!-- Modal -->
+	<div class="modal fade" id="modalDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Supprimer une catégorie</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					...
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+					<a href="" class="btn btn-primary">Supprimer</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		window.onload = () => {
+        let btdeletes = document.querySelectorAll(".modal-trigger")
+        for(let btdelete of btdeletes) {
+            btdelete.addEventListener("click", function(){
+                document.querySelector(".modal-footer a").href=`/admin/category/delete/${this.dataset.id}`
+                console.log(document.querySelector(".modal-footer a").href)
+                document.querySelector(".modal-body").innerText = `Etes-vous sûr de vouloir supprimer la catégorie "${this.dataset.title}"`
+            })
+        }
+    }
+	</script>
+
+
 {% endblock %}
