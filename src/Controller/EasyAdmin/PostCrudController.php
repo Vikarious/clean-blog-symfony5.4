@@ -5,9 +5,12 @@ namespace App\Controller\EasyAdmin;
 use App\Entity\Post;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 
 class PostCrudController extends AbstractCrudController
 {
@@ -20,10 +23,13 @@ class PostCrudController extends AbstractCrudController
     {
         return [
             IdField::new('id')->hideOnForm(),
+            DateTimeField::new('created_at')->hideWhenCreating(),
             TextField::new('title'),
-            // TextEditorField::new('description'),
-            TextField::new('image'),
-            BooleanField::new('active'),
+            AssociationField::new('category'),
+            TextEditorField::new('content')->onlyOnForms(),
+            ImageField::new('image')->hideOnForm(),
+            TextField::new('image')->onlyOnForms(),
+            BooleanField::new('active')->hideWhenCreating(),
         ];
     }
 }
